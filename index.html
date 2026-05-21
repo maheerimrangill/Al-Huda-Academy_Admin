@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Academy Fee Manager</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#0f172a,#1e293b,#111827);
+      min-height:100vh;
+      padding:20px;
+      color:white;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.08);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h1{
+      font-size:35px;
+      margin-bottom:10px;
+    }
+
+    .sub{
+      color:#cbd5e1;
+      margin-bottom:20px;
+    }
+
+    input,select{
+      width:100%;
+      padding:14px;
+      border:none;
+      outline:none;
+      border-radius:12px;
+      margin-bottom:15px;
+      background:#1e293b;
+      color:white;
+      font-size:16px;
+    }
+
+    button{
+      padding:12px 20px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      background:linear-gradient(to right,#3b82f6,#8b5cf6);
+      color:white;
+      font-weight:bold;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:scale(1.05);
+    }
+
+    .student{
+      background:#1e293b;
+      padding:15px;
+      border-radius:15px;
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .paid{
+      color:#22c55e;
+      font-weight:bold;
+    }
+
+    .unpaid{
+      color:#ef4444;
+      font-weight:bold;
+    }
+
+    .section-title{
+      margin-top:20px;
+      margin-bottom:10px;
+    }
+
+    .boys{
+      color:#60a5fa;
+    }
+
+    .girls{
+      color:#f472b6;
+    }
+
+    @media(max-width:700px){
+      .student{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+      }
+
+      button{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h1>🎓 Academy Fee Manager</h1>
+
+    <p class="sub">
+      Professional fee management system for academy teachers.
+    </p>
+
+    <input type="text" id="studentName" placeholder="Enter Student Name">
+
+    <select id="studentClass">
+      <option>Class 6</option>
+      <option>Class 7</option>
+      <option>Class 8</option>
+      <option>Class 9</option>
+      <option>Class 10</option>
+    </select>
+
+    <select id="gender">
+      <option>Boy</option>
+      <option>Girl</option>
+    </select>
+
+    <button onclick="addStudent()">➕ Add Student</button>
+  </div>
+
+  <div id="classesContainer"></div>
+
+  <div class="card">
+    <h2>❌ Students Who Have Not Paid Fee</h2>
+
+    <div id="unpaidList"></div>
+  </div>
+
+</div>
+
+<script>
+
+  const students = [];
+
+  const classes = [
+    "Class 6",
+    "Class 7",
+    "Class 8",
+    "Class 9",
+    "Class 10"
+  ];
+
+  function addStudent(){
+
+    const name = document.getElementById("studentName").value;
+    const studentClass = document.getElementById("studentClass").value;
+    const gender = document.getElementById("gender").value;
+
+    if(name.trim() === ""){
+      alert("Please enter student name");
+      return;
+    }
+
+    students.push({
+      id: Date.now(),
+      name,
+      studentClass,
+      gender,
+      paid:false
+    });
+
+    document.getElementById("studentName").value = "";
+
+    renderStudents();
+  }
+
+  function toggleFee(id){
+
+    const student = students.find(s => s.id === id);
+
+    student.paid = !student.paid;
+
+    renderStudents();
+  }
+
+  function renderStudents(){
+
+    const container = document.getElementById("classesContainer");
+
+    container.innerHTML = "";
+
+    classes.forEach(cls => {
+
+      const classCard = document.createElement("div");
+
+      classCard.className = "card";
+
+      classCard.innerHTML = `
+        <h2>📚 ${cls}</h2>
+
+        <h3 class="section-title boys">
+           Boys Section
+        </h3>
+
+        <div id="${cls}-boys"></div>
+
+        <h3 class="section-title girls">
+           Girls Section
+        </h3>
+
+        <div id="${cls}-girls"></div>
+      `;
+
+      container.appendChild(classCard);
+
+      const boysDiv = classCard.querySelector(`#${CSS.escape(cls)}-boys`);
+      const girlsDiv = classCard.querySelector(`#${CSS.escape(cls)}-girls`);
+
+      students
+        .filter(s => s.studentClass === cls && s.gender === "Boy")
+        .forEach(student => {
+
+          boysDiv.innerHTML += `
+            <div class="student">
+
+              <div>
+                <h3>${student.name}</h3>
+
+                <p class="${student.paid ? 'paid' : 'unpaid'}">
+                  ${student.paid ? 'Fee Paid' : 'Fee Not Paid'}
+                </p>
+              </div>
+
+              <button onclick="toggleFee(${student.id})">
+                ${student.paid ? 'Undo' : 'Mark Paid'}
+              </button>
+
+            </div>
+          `;
+        });
+
+      students
+        .filter(s => s.studentClass === cls && s.gender === "Girl")
+        .forEach(student => {
+
+          girlsDiv.innerHTML += `
+            <div class="student">
+
+              <div>
+                <h3>${student.name}</h3>
+
+                <p class="${student.paid ? 'paid' : 'unpaid'}">
+                  ${student.paid ? 'Fee Paid' : 'Fee Not Paid'}
+                </p>
+              </div>
+
+              <button onclick="toggleFee(${student.id})">
+                ${student.paid ? 'Undo' : 'Mark Paid'}
+              </button>
+
+            </div>
+          `;
+        });
+
+    });
+
+    renderUnpaid();
+  }
+
+  function renderUnpaid(){
+
+    const unpaidList = document.getElementById("unpaidList");
+
+    unpaidList.innerHTML = "";
+
+    const unpaidStudents = students.filter(s => !s.paid);
+
+    if(unpaidStudents.length === 0){
+
+      unpaidList.innerHTML =
+        "<p>All students have paid the fee 🎉</p>";
+
+      return;
+    }
+
+    unpaidStudents.forEach(student => {
+
+      unpaidList.innerHTML += `
+        <div class="student">
+
+          <div>
+            <h3>${student.name}</h3>
+
+            <p>
+              ${student.studentClass} • ${student.gender}
+            </p>
+          </div>
+
+          <div class="unpaid">
+            Not Paid
+          </div>
+
+        </div>
+      `;
+    });
+  }
+
+  renderStudents();
+
+</script>
+
+</body>
+</html>
