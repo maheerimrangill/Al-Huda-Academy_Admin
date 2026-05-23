@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al-Huda Academy Fee Manager Pro</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b,#111827);
+    min-height:100vh;
+    color:white;
+    padding:20px;
+}
+
+.container{
+    max-width:1400px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:38px;
+    margin-bottom:10px;
+}
+
+.header p{
+    color:#cbd5e1;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.35);
+    animation:fadeIn .5s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat-card{
+    background:rgba(255,255,255,.08);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    transition:.3s;
+}
+
+.stat-card:hover{
+    transform:translateY(-5px);
+}
+
+.stat-card h2{
+    font-size:32px;
+    margin-top:10px;
+}
+
+.stat-card p{
+    color:#cbd5e1;
+}
+
+.total{
+    border-left:5px solid #3b82f6;
+}
+
+.paid{
+    border-left:5px solid #22c55e;
+}
+
+.unpaid{
+    border-left:5px solid #ef4444;
+}
+
+.collection{
+    border-left:5px solid #f59e0b;
+}
+
+input,select{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:#1e293b;
+    color:white;
+    font-size:15px;
+}
+
+button{
+    border:none;
+    border-radius:12px;
+    padding:12px 18px;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.add-btn{
+    background:linear-gradient(to right,#3b82f6,#8b5cf6);
+}
+
+.export-btn{
+    background:#10b981;
+}
+
+.delete-btn{
+    background:#ef4444;
+}
+
+.mark-btn{
+    background:#22c55e;
+}
+
+.search-box{
+    margin-bottom:20px;
+}
+
+.student{
+    background:#1e293b;
+    padding:15px;
+    border-radius:15px;
+    margin-top:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.student-info h3{
+    margin-bottom:5px;
+}
+
+.student-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.student-buttons button{
+    min-width:110px;
+}
+
+.section-title{
+    margin:15px 0;
+}
+
+.boys{
+    color:#60a5fa;
+}
+
+.girls{
+    color:#f472b6;
+}
+
+.paid-status{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+.unpaid-status{
+    color:#ef4444;
+    font-weight:bold;
+}
+
+.footer{
+    text-align:center;
+    margin-top:25px;
+    color:#94a3b8;
+}
+
+@media(max-width:768px){
+
+    .student{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .student-buttons{
+        width:100%;
+    }
+
+    .student-buttons button{
+        flex:1;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>🎓 Al-Huda Academy </h1>
+<p>Professional Academy that leads to your success</p>
+</div>
+
+<!-- DASHBOARD -->
+
+<div class="dashboard">
+
+<div class="stat-card total">
+<p>Total Students</p>
+<h2 id="totalStudents">0</h2>
+</div>
+
+<div class="stat-card paid">
+<p>Paid Students</p>
+<h2 id="paidStudents">0</h2>
+</div>
+
+<div class="stat-card unpaid">
+<p>Unpaid Students</p>
+<h2 id="unpaidStudents">0</h2>
+</div>
+
+<div class="stat-card collection">
+<p>Total Collection (Rs)</p>
+<h2 id="totalCollection">0</h2>
+</div>
+
+</div>
+
+<!-- ADD STUDENT -->
+
+<div class="card">
+
+<h2>Add Student</h2>
+
+<br>
+
+<input
+type="text"
+id="studentName"
+placeholder="Student Name">
+
+<select id="studentClass">
+<option>Class 6</option>
+<option>Class 7</option>
+<option>Class 8</option>
+<option>Class 9</option>
+<option>Class 10</option>
+</select>
+
+<select id="gender">
+<option>Boy</option>
+<option>Girl</option>
+</select>
+
+<input
+type="number"
+id="studentFee"
+placeholder="Monthly Fee (Rs)">
+
+<button
+class="add-btn"
+onclick="addStudent()">
+➕ Add Student
+</button>
+
+<br><br>
+
+<button
+class="export-btn"
+onclick="exportCSV()">
+📥 Export CSV
+</button>
+
+<button
+class="delete-btn"
+onclick="clearAllData()">
+🗑 Delete All Data
+</button>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="card">
+
+<h2>🔍 Search Student</h2>
+
+<br>
+
+<input
+type="text"
+id="searchInput"
+class="search-box"
+placeholder="Search by name..."
+onkeyup="renderStudents()">
+
+</div>
+
+<!-- CLASSES -->
+
+<div id="classesContainer"></div>
+
+<!-- UNPAID -->
+
+<div class="card">
+
+<h2>❌Fee Defulters</h2>
+
+<br>
+
+<div id="unpaidList"></div>
+
+</div>
+
+<div class="footer">
+© 2026 Maheer Gill | All Rights Reserved
+</div>
+
+<!-- JAVASCRIPT STARTS IN PART 2 -->
+ <script>
+
+let students =
+JSON.parse(
+localStorage.getItem("academyStudents")
+) || [];
+
+const classes = [
+"Class 6",
+"Class 7",
+"Class 8",
+"Class 9",
+"Class 10"
+];
+
+function saveStudents(){
+localStorage.setItem(
+"academyStudents",
+JSON.stringify(students)
+);
+}
+
+function addStudent(){
+
+const name =
+document
+.getElementById("studentName")
+.value
+.trim();
+
+const studentClass =
+document
+.getElementById("studentClass")
+.value;
+
+const gender =
+document
+.getElementById("gender")
+.value;
+
+const fee =
+parseInt(
+document
+.getElementById("studentFee")
+.value
+) || 0;
+
+if(name===""){
+alert("Enter student name");
+return;
+}
+
+students.push({
+
+id:Date.now(),
+
+name,
+
+studentClass,
+
+gender,
+
+fee,
+
+paid:false
+
+});
+
+saveStudents();
+
+document
+.getElementById("studentName")
+.value="";
+
+document
+.getElementById("studentFee")
+.value="";
+
+renderStudents();
+
+}
+
+function toggleFee(id){
+
+const student =
+students.find(
+s => s.id === id
+);
+
+if(!student) return;
+
+student.paid =
+!student.paid;
+
+saveStudents();
+
+renderStudents();
+
+}
+
+function removeStudent(id){
+
+if(
+!confirm(
+"Remove this student?"
+)
+){
+return;
+}
+
+students =
+students.filter(
+s => s.id !== id
+);
+
+saveStudents();
+
+renderStudents();
+
+}
+
+function clearAllData(){
+
+if(
+confirm(
+"Delete all academy data?"
+)
+){
+
+students=[];
+
+localStorage.removeItem(
+"academyStudents"
+);
+
+renderStudents();
+
+}
+
+}
+
+function updateDashboard(){
+
+const total =
+students.length;
+
+const paid =
+students.filter(
+s => s.paid
+).length;
+
+const unpaid =
+students.filter(
+s => !s.paid
+).length;
+
+const collection =
+students
+.filter(
+s => s.paid
+)
+.reduce(
+(sum,s)=>
+sum+s.fee,
+0
+);
+
+document
+.getElementById(
+"totalStudents"
+)
+.innerText =
+total;
+
+document
+.getElementById(
+"paidStudents"
+)
+.innerText =
+paid;
+
+document
+.getElementById(
+"unpaidStudents"
+)
+.innerText =
+unpaid;
+
+document
+.getElementById(
+"totalCollection"
+)
+.innerText =
+collection;
+
+}
+
+function renderStudents(){
+
+const search =
+document
+.getElementById(
+"searchInput"
+)
+.value
+.toLowerCase();
+
+const container =
+document
+.getElementById(
+"classesContainer"
+);
+
+container.innerHTML="";
+
+classes.forEach(cls=>{
+
+const classCard =
+document
+.createElement("div");
+
+classCard.className =
+"card";
+
+classCard.innerHTML = `
+
+<h2>📚 ${cls}</h2>
+
+<h3 class="section-title boys">
+👦 Boys Section
+</h3>
+
+<div id="${cls}-boys"></div>
+
+<h3 class="section-title girls">
+👧 Girls Section
+</h3>
+
+<div id="${cls}-girls"></div>
+
+`;
+
+container.appendChild(
+classCard
+);
+
+const boysDiv =
+classCard.querySelector(
+`#${CSS.escape(cls)}-boys`
+);
+
+const girlsDiv =
+classCard.querySelector(
+`#${CSS.escape(cls)}-girls`
+);
+
+students
+.filter(
+s =>
+s.studentClass===cls &&
+s.gender==="Boy" &&
+s.name
+.toLowerCase()
+.includes(search)
+)
+.forEach(student=>{
+
+boysDiv.innerHTML += `
+
+<div class="student">
+
+<div class="student-info">
+
+<h3>
+${student.name}
+</h3>
+
+<p>
+Fee:
+Rs ${student.fee}
+</p>
+
+<p class="${
+student.paid
+?
+'paid-status'
+:
+'unpaid-status'
+}">
+
+${
+student.paid
+?
+'Fee Paid'
+:
+'Fee Not Paid'
+}
+
+</p>
+
+</div>
+
+<div class="student-buttons">
+
+<button
+class="mark-btn"
+onclick="
+toggleFee(
+${student.id}
+)
+">
+
+${
+student.paid
+?
+'Undo'
+:
+'Mark Paid'
+}
+
+</button>
+
+<button
+class="delete-btn"
+onclick="
+removeStudent(
+${student.id}
+)
+">
+
+Remove
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+students
+.filter(
+s =>
+s.studentClass===cls &&
+s.gender==="Girl" &&
+s.name
+.toLowerCase()
+.includes(search)
+)
+.forEach(student=>{
+
+girlsDiv.innerHTML += `
+
+<div class="student">
+
+<div class="student-info">
+
+<h3>
+${student.name}
+</h3>
+
+<p>
+Fee:
+Rs ${student.fee}
+</p>
+
+<p class="${
+student.paid
+?
+'paid-status'
+:
+'unpaid-status'
+}">
+
+${
+student.paid
+?
+'Fee Paid'
+:
+'Fee Not Paid'
+}
+
+</p>
+
+</div>
+
+<div class="student-buttons">
+
+<button
+class="mark-btn"
+onclick="
+toggleFee(
+${student.id}
+)
+">
+
+${
+student.paid
+?
+'Undo'
+:
+'Mark Paid'
+}
+
+</button>
+
+<button
+class="delete-btn"
+onclick="
+removeStudent(
+${student.id}
+)
+">
+
+Remove
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+});
+
+renderUnpaid();
+
+updateDashboard();
+
+}
+function renderUnpaid(){
+
+const unpaidList =
+document.getElementById(
+"unpaidList"
+);
+
+unpaidList.innerHTML="";
+
+const unpaidStudents =
+students.filter(
+s => !s.paid
+);
+
+if(
+unpaidStudents.length===0
+){
+
+unpaidList.innerHTML=
+`
+<div class="student">
+<div>
+<h3>
+🎉 Great!
+</h3>
+<p>
+All students have paid the fee.
+</p>
+</div>
+</div>
+`;
+
+return;
+
+}
+
+unpaidStudents.forEach(
+student=>{
+
+unpaidList.innerHTML += `
+
+<div class="student">
+
+<div>
+
+<h3>
+${student.name}
+</h3>
+
+<p>
+${student.studentClass}
+•
+${student.gender}
+</p>
+
+<p>
+Fee:
+Rs ${student.fee}
+</p>
+
+</div>
+
+<div
+class="unpaid-status"
+>
+
+Not Paid
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+function exportCSV(){
+
+if(
+students.length===0
+){
+
+alert(
+"No student data found."
+);
+
+return;
+
+}
+
+let csv =
+"Name,Class,Gender,Fee,Status\n";
+
+students.forEach(
+student=>{
+
+csv +=
+`${student.name},${student.studentClass},${student.gender},${student.fee},${student.paid ? "Paid" : "Unpaid"}\n`;
+
+});
+
+const blob =
+new Blob(
+[csv],
+{
+type:
+"text/csv;charset=utf-8;"
+}
+);
+
+const link =
+document.createElement(
+"a"
+);
+
+const url =
+URL.createObjectURL(
+blob
+);
+
+link.href = url;
+
+link.download =
+"academy_students.csv";
+
+document.body.appendChild(
+link
+);
+
+link.click();
+
+document.body.removeChild(
+link
+);
+
+}
+
+renderStudents();
+
+</script>
+
+</body>
+</html>
